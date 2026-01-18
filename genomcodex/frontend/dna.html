@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DNA Records | GenomCodex</title>
+
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/polish.css">
+
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #f4f6fb;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #0f172a, #020617);
+      color: white;
+      padding: 30px 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 22px;
+    }
+
+    .nav-btn {
+      display: block;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      color: #cbd5f5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #1e293b;
+      color: white;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 12px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>🧬 GenomCodex</h2>
+    <a href="dashboard.html" class="nav-btn">Dashboard</a>
+    <a href="dna.html" class="nav-btn active">DNA Records</a>
+    <a href="audit.html" class="nav-btn">Audit Trail</a>
+    <a href="blockchain.html" class="nav-btn">Blockchain</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+
+    <h1>DNA Records</h1>
+
+    <!-- Add DNA -->
+    <div class="card">
+      <h2>Add DNA Record</h2>
+
+      <label>DNA Sequence</label>
+      <textarea id="dnaSequence" rows="4"></textarea>
+
+      <label>Owner Name</label>
+      <input id="owner" placeholder="doctor1">
+
+      <label>Access Level</label>
+      <select id="access">
+        <option value="medical">Medical</option>
+        <option value="forensic">Forensic</option>
+      </select>
+
+      <button onclick="addDNA()">Submit DNA</button>
+
+      <pre id="addResult"></pre>
+    </div>
+
+    <!-- Search DNA -->
+    <div class="card">
+      <h2>Search DNA (by sequence)</h2>
+
+      <label>DNA Sequence</label>
+      <input id="searchSequence" placeholder="CTTTGGGATTCAGGCTA">
+
+      <button onclick="searchDNA()">Search</button>
+
+      <pre id="searchResult"></pre>
+    </div>
+
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const API = "http://127.0.0.1:8000";
+
+    async function addDNA() {
+      const dna = document.getElementById("dnaSequence").value;
+      const owner = document.getElementById("owner").value;
+      const access = document.getElementById("access").value;
+
+      const res = await fetch(`${API}/dna/add?actor=${owner}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dna_sequence: dna,
+          owner: owner,
+          access_level: access
+        })
+      });
+
+      const data = await res.json();
+      document.getElementById("addResult").textContent =
+        JSON.stringify(data, null, 2);
+    }
+
+    async function searchDNA() {
+      const seq = document.getElementById("searchSequence").value;
+
+      const res = await fetch(
+        `${API}/dna/search?sequence=${encodeURIComponent(seq)}`,
+        { method: "POST" }
+      );
+
+      const data = await res.json();
+      document.getElementById("searchResult").textContent =
+        JSON.stringify(data, null, 2);
+    }
+  </script>
+
+</body>
+</html>

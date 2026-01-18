@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/polish.css">
+
+<meta charset="UTF-8">
+<title>GenomCodex | Forensic Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===============================
+   GLOBAL
+================================ */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: #e5e7eb;
+}
+
+/* ===============================
+   LAYOUT
+================================ */
+.wrapper {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* ===============================
+   TOP BAR
+================================ */
+.topbar {
+  background: rgba(2,6,23,0.95);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 18px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.user-info {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.logout {
+  margin-left: 14px;
+  background: #ef4444;
+  border: none;
+  padding: 8px 12px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===============================
+   MAIN CONTENT
+================================ */
+.main {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ===============================
+   CARD
+================================ */
+.card {
+  background: rgba(15,23,42,0.9);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 24px;
+}
+
+/* ===============================
+   FORM
+================================ */
+label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 18px;
+  display: block;
+}
+
+textarea {
+  width: 100%;
+  min-height: 90px;
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(2,6,23,0.9);
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #6366f1;
+}
+
+/* ===============================
+   BUTTON
+================================ */
+button.primary {
+  margin-top: 22px;
+  padding: 14px 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+button.primary:hover {
+  opacity: 0.95;
+}
+
+/* ===============================
+   RESULT
+================================ */
+pre {
+  background: rgba(2,6,23,0.9);
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 26px;
+  font-size: 13px;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.verification {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(22,163,74,0.15);
+  color: #22c55e;
+  font-weight: 600;
+  display: none;
+}
+
+/* ===============================
+   INFO STRIP
+================================ */
+.info-strip {
+  margin-top: 22px;
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.6;
+  border-left: 3px solid #6366f1;
+  padding-left: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <h1>🧬 GenomCodex — Forensic Verification Portal</h1>
+    <div>
+      <span class="user-info" id="userInfo"></span>
+      <button class="logout" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="card">
+      <h2>DNA Integrity Verification</h2>
+      <div class="subtitle">
+        Read-only forensic search. DNA is verified against blockchain-anchored proof.
+      </div>
+
+      <label>DNA Sequence</label>
+      <textarea id="dnaSequence" placeholder="Paste DNA sequence for verification"></textarea>
+
+      <button class="primary" onclick="verifyDNA()">Verify DNA</button>
+
+      <div class="verification" id="verifiedBadge">
+        ✔ DNA VERIFIED — Cryptographic proof found on blockchain
+      </div>
+
+      <pre id="result"></pre>
+
+      <div class="info-strip">
+        Forensic users cannot modify genomic records.
+        Verification is performed by hashing the provided DNA and matching it against
+        immutable blockchain-anchored proofs.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+// Session check
+const user = JSON.parse(localStorage.getItem("genomcodex_user"));
+if (!user || user.role !== "forensic") {
+  window.location.href = "index.html";
+}
+
+document.getElementById("userInfo").textContent =
+  `${user.username} • FORENSIC`;
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "index.html";
+}
+
+async function verifyDNA() {
+  const seq = document.getElementById("dnaSequence").value;
+  const badge = document.getElementById("verifiedBadge");
+  const resultBox = document.getElementById("result");
+
+  badge.style.display = "none";
+  resultBox.textContent = "";
+
+  const res = await fetch(
+    `${API}/dna/search?sequence=${encodeURIComponent(seq)}`,
+    { method: "POST" }
+  );
+
+  const data = await res.json();
+
+  if (res.ok) {
+    badge.style.display = "block";
+  }
+
+  resultBox.textContent = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blockchain Ledger | GenomCodex</title>
+
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/polish.css">
+
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #f4f6fb;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #0f172a, #020617);
+      color: white;
+      padding: 30px 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 22px;
+    }
+
+    .nav-btn {
+      display: block;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      color: #cbd5f5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #1e293b;
+      color: white;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+    }
+
+    .chain {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .block {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      position: relative;
+    }
+
+    .block::before {
+      content: "⛓️";
+      position: absolute;
+      left: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      opacity: 0.6;
+    }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .hash {
+      font-size: 12px;
+      word-break: break-all;
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 10px;
+    }
+
+    .genesis {
+      background: linear-gradient(135deg, #e0e7ff, #eef2ff);
+      border: 2px dashed #6366f1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>🧬 GenomCodex</h2>
+    <a href="dashboard.html" class="nav-btn">Dashboard</a>
+    <a href="dna.html" class="nav-btn">DNA Records</a>
+    <a href="audit.html" class="nav-btn">Audit Trail</a>
+    <a href="blockchain.html" class="nav-btn active">Blockchain</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>Blockchain Ledger</h1>
+
+    <div class="chain" id="chain"></div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const API = "http://127.0.0.1:8000";
+
+    async function loadBlockchain() {
+      const res = await fetch(`${API}/blockchain/all`);
+      const blocks = await res.json();
+
+      const chain = document.getElementById("chain");
+      chain.innerHTML = "";
+
+      blocks.forEach((block, index) => {
+        const div = document.createElement("div");
+        div.className = "block" + (index === 0 ? " genesis" : "");
+
+        div.innerHTML = `
+          <div class="block-header">
+            <span>Block #${block.index}</span>
+            <span>${new Date(block.timestamp).toLocaleString()}</span>
+          </div>
+
+          <div class="label">Data</div>
+          <div class="hash">${JSON.stringify(block.data, null, 2)}</div>
+
+          <div class="label">Previous Hash</div>
+          <div class="hash">${block.previous_hash}</div>
+
+          <div class="label">Current Hash</div>
+          <div class="hash">${block.hash}</div>
+        `;
+
+        chain.appendChild(div);
+      });
+    }
+
+    loadBlockchain();
+  </script>
+
+</body>
+</html>

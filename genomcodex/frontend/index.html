@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/polish.css">
+
+<meta charset="UTF-8">
+<title>GenomCodex — Secure Genomic Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===============================
+   GLOBAL RESET & VARIABLES
+================================ */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #4f46e5;
+  --secondary: #6366f1;
+  --dark: #0f172a;
+  --muted: #64748b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --success: #16a34a;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: linear-gradient(120deg, #0f172a, #1e1b4b);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark);
+}
+
+/* ===============================
+   MAIN LAYOUT
+================================ */
+.auth-wrapper {
+  width: 100%;
+  max-width: 1100px;
+  background: var(--card);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.35);
+}
+
+/* ===============================
+   LEFT PANEL (BRANDING)
+================================ */
+.brand-panel {
+  background: linear-gradient(160deg, #4f46e5, #6366f1);
+  color: white;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-panel h1 {
+  font-size: 36px;
+  margin: 0;
+}
+
+.brand-panel p {
+  margin-top: 15px;
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+.feature-list {
+  margin-top: 30px;
+}
+
+.feature-list li {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+/* ===============================
+   RIGHT PANEL (LOGIN FORM)
+================================ */
+.form-panel {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-panel h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.form-panel .subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+/* ===============================
+   FORM ELEMENTS
+================================ */
+label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  margin-bottom: 18px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+}
+
+/* ===============================
+   BUTTON
+================================ */
+button {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79,70,229,0.4);
+}
+
+/* ===============================
+   FOOTER NOTE
+================================ */
+.form-note {
+  margin-top: 18px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 900px) {
+  .auth-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .brand-panel {
+    display: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- LEFT BRAND PANEL -->
+  <div class="brand-panel">
+    <h1>🧬 GenomCodex</h1>
+    <p>
+      A privacy-first genomic data platform that anchors
+      cryptographic proof of DNA records on blockchain,
+      ensuring integrity, traceability, and trust.
+    </p>
+
+    <ul class="feature-list">
+      <li>🔐 Off-chain DNA storage for privacy</li>
+      <li>⛓️ Blockchain-anchored integrity proof</li>
+      <li>🧾 Tamper-evident audit trails</li>
+      <li>🧬 Role-based genomic access</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT LOGIN PANEL -->
+  <div class="form-panel">
+    <h2>Welcome Back</h2>
+    <div class="subtitle">Sign in to access the GenomCodex platform</div>
+
+    <label>Username</label>
+    <input id="username" placeholder="e.g. doctor1">
+
+    <label>Password</label>
+    <input id="password" type="password" placeholder="••••••••">
+
+    <label>Role</label>
+    <select id="role">
+      <option value="medical">Medical</option>
+      <option value="forensic">Forensic</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button onclick="login()">Login</button>
+
+    <div class="form-note">
+      Prototype login. Authentication simulated for demo purposes.
+    </div>
+  </div>
+
+</div>
+
+<script>
+function login() {
+  const username = document.getElementById("username").value.trim();
+  const role = document.getElementById("role").value;
+
+  if (!username) {
+    alert("Please enter username");
+    return;
+  }
+
+  // Store session (frontend-only MVP)
+  localStorage.setItem("genomcodex_user", JSON.stringify({
+    username: username,
+    role: role
+  }));
+
+  // Redirect based on role (next pages)
+  if (role === "forensic") {
+    window.location.href = "forensic.html";
+  } else {
+    window.location.href = "dashboard.html";
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Audit Trail | GenomCodex</title>
+
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/polish.css">
+
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #f4f6fb;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #0f172a, #020617);
+      color: white;
+      padding: 30px 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 22px;
+    }
+
+    .nav-btn {
+      display: block;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      color: #cbd5f5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #1e293b;
+      color: white;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 700;
+    }
+
+    td code {
+      font-size: 12px;
+      color: #0f172a;
+      word-break: break-all;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>🧬 GenomCodex</h2>
+    <a href="dashboard.html" class="nav-btn">Dashboard</a>
+    <a href="dna.html" class="nav-btn">DNA Records</a>
+    <a href="audit.html" class="nav-btn active">Audit Trail</a>
+    <a href="blockchain.html" class="nav-btn">Blockchain</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>Audit Trail</h1>
+
+    <div class="card">
+      <button onclick="loadAudit()">Refresh Logs</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>DNA Hash</th>
+            <th>Performed By</th>
+            <th>Block Hash</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="auditTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const API = "http://127.0.0.1:8000";
+
+    async function loadAudit() {
+      const res = await fetch(`${API}/audit/all`);
+      const logs = await res.json();
+
+      const table = document.getElementById("auditTable");
+      table.innerHTML = "";
+
+      logs.forEach(log => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${log.action}</td>
+          <td><code>${log.dna_hash}</code></td>
+          <td>${log.performed_by}</td>
+          <td><code>${log.block_hash}</code></td>
+          <td>${new Date(log.timestamp).toLocaleString()}</td>
+        `;
+
+        table.appendChild(row);
+      });
+    }
+
+    // Auto load on page open
+    loadAudit();
+  </script>
+
+</body>
+</html>
